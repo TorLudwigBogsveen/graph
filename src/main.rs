@@ -1,15 +1,10 @@
-use clap::{Parser, Arg, App};
+use clap::{Arg, App};
 use mathsolver::equation::Equation;
 use plotters::prelude::*;
-use plotters_bitmap::bitmap_pixel::BGRXPixel;
 use plotters_bitmap::BitMapBackend;
-use std::collections::VecDeque;
 use std::error::Error;
 use std::borrow::{Borrow, BorrowMut};
 use std::path::Path;
-
-const W: usize = 800;
-const H: usize = 600;
 
 struct BufferWrapper(Vec<u32>);
 impl Borrow<[u8]> for BufferWrapper {
@@ -165,7 +160,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     plot(&mut eq, graph_settings)?;
 
-    println!("{:?}", Path::new(path).canonicalize()?.as_os_str());
+    println!("{}", Path::new(path).canonicalize()?.as_os_str().to_str().unwrap());
 
     Ok(())
 }
