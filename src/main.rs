@@ -1,13 +1,40 @@
 use clap::{Arg, App};
+use mathsolver::complex::Complex;
 use mathsolver::equation::Equation;
-//use plotters::coord::types::RangedCoordf64;
+use plotters::coord::types::RangedCoordf64;
 use plotters::prelude::*;
 use plotters_bitmap::BitMapBackend;
 use std::error::Error;
 use std::path::Path;
 
-//type Chart<'a> = ChartContext<'a, BitMapBackend<'a>, Cartesian2d<RangedCoordf64, RangedCoordf64>>;
-//type Root<'a> = DrawingArea<BitMapBackend<'a>, plotters::coord::Shift>;
+pub fn mandelbrot(x: f64, y: f64) -> i32 {
+    let xoff: f64 = -2.5;
+    let yoff: f64 = -1.0;
+    let width: f64 = 3.5;
+    let height: f64 = 2.0;
+    
+    let pos = Complex {real: x, img: y};
+
+    let x0 = (pos.real / 1000 as f64) * width + xoff;
+    let y0 = (1.0 - (pos.img / 1000 as f64)) * height + yoff;
+    let mut iteration = 0;
+    let max_iteration = 100;
+
+    let mut z = Complex { real: 0.0, img: 0.0 };
+    let c = Complex {real: x0, img: y0};
+
+    while z.magsq() <= 2.0*2.0 && iteration < max_iteration {
+        z *= z;
+        z += c;
+
+        iteration = iteration + 1;
+    }
+
+    iteration
+}
+
+type Chart<'a, 'b> = ChartContext<'a, BitMapBackend<'b>, Cartesian2d<RangedCoordf64, RangedCoordf64>>;
+type Root<'a> = DrawingArea<BitMapBackend<'a>, plotters::coord::Shift>;
 struct GraphSettings<'a> {
     path: &'a str,
     image_width: u32,
@@ -15,13 +42,13 @@ struct GraphSettings<'a> {
     sim_window: (f64, f64, f64, f64)
 }
 
-/*fn create_root<'a>(settings: &GraphSettings<'a>) -> Result<Root<'a>, Box<dyn Error>> {
+fn create_root<'a>(settings: &GraphSettings<'a>) -> Result<Root<'a>, Box<dyn Error>> {
     let root = BitMapBackend::new(settings.path, (settings.image_width, settings.image_height)).into_drawing_area();
     root.fill(&WHITE)?;
     Ok(root)
 }
 
-fn create_graph<'a>(settings: &GraphSettings<'a>, root: &'a Root<'a>) -> Result<Chart<'a>, Box<dyn Error>> {
+fn create_graph<'a, 'b>(settings: &GraphSettings<'a>, root: &'a Root<'b>) -> Result<Chart<'a, 'b>, Box<dyn Error>> {
     let mut chart = ChartBuilder::on(root)
         .margin(10)
         .set_all_label_area_size(30)
@@ -34,24 +61,10 @@ fn create_graph<'a>(settings: &GraphSettings<'a>, root: &'a Root<'a>) -> Result<
         .draw()?;
 
     Ok(chart)
-}*/
+}
 
 
-fn plot(eq: &mut Equation, settings: &GraphSettings, /*chart: &Chart*/) -> Result<(), Box<dyn Error>> {
-    let root = BitMapBackend::new(settings.path, (settings.image_width, settings.image_height)).into_drawing_area();
-    root.fill(&WHITE)?;
-
-    let mut chart = ChartBuilder::on(&root)
-        .margin(10)
-        .set_all_label_area_size(30)
-        .build_cartesian_2d(settings.sim_window.0..settings.sim_window.1, settings.sim_window.2..settings.sim_window.3)?;
-
-    chart
-        .configure_mesh()
-        .label_style(("sans-serif", 15).into_font().color(&BLACK))
-        .axis_style(&BLACK)
-        .draw()?;
-    
+fn plot(eq: &mut Equation, settings: &GraphSettings, chart: &Chart) -> Result<(), Box<dyn Error>> {
     let fidelity_w = settings.image_width;
     let fidelity_h = settings.image_height;
 
@@ -61,24 +74,43 @@ fn plot(eq: &mut Equation, settings: &GraphSettings, /*chart: &Chart*/) -> Resul
             let x = ((i as f64) / fidelity_w as f64) * (settings.sim_window.1-settings.sim_window.0) / 2.0;
 
             let val = eq.call_on(&[("x", x), ("y", y)]);
-            if val < 0.003 && val > -0.003{
-                chart.plotting_area().draw_pixel((x, y), &BLACK)?;
+            let offset = 0.003;
+            if val < offset && val > -offset{
+                let alpha = 1.0 - val.abs() / (offset * 8.0);
+                chart.plotting_area().draw_pixel((x, y), &RGBAColor(0, 0, 0, alpha))?;
             }
         }
     }
 
-    /*let mut data = Vec::new();
+    Ok(())
+}
+
+fn plot_x(eq: &mut Equation, settings: &GraphSettings, chart: &mut Chart) -> Result<(), Box<dyn Error>> {
+    let fidelity = settings.image_width / 8;
 
     chart.draw_series(LineSeries::new(
         (-(fidelity as i32)..=fidelity as i32)
-            .map(|i| ((i as f64) / fidelity as f64) * (settings.sim_window.1-settings.sim_window.0) + settings.sim_window.0)
+            .map(|i| ((i as f64) / fidelity as f64) * (settings.sim_window.1-settings.sim_window.0) / 2.0)
             .map(|x| {
                 (x, eq.call_on(&[("x", x)]))
             }),
         BLACK.stroke_width(3),
-    ))?;*/
+    ))?;
 
-    root.present()?;
+    Ok(())
+}
+
+fn plot_y(eq: &mut Equation, settings: &GraphSettings, chart: &mut Chart) -> Result<(), Box<dyn Error>> {
+    let fidelity = settings.image_height / 8;
+
+    chart.draw_series(LineSeries::new(
+        (-(fidelity as i32)..=fidelity as i32)
+            .map(|i| ((i as f64) / fidelity as f64) * (settings.sim_window.3-settings.sim_window.2) / 2.0)
+            .map(|y| {
+                (eq.call_on(&[("y", y)]), y)
+            }),
+        BLACK.stroke_width(3),
+    ))?;
 
     Ok(())
 }
@@ -163,16 +195,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut eq = Equation::new(eq);
 
-    plot(&mut eq, &graph_settings)?;
+    //plot(&mut eq, &graph_settings)?;
 
-    /*let root = create_root(&graph_settings)?;
+    let root = create_root(&graph_settings)?;
+    let mut graph = create_graph(&graph_settings, &root)?;
 
-    {
-        let graph = create_graph(&graph_settings, &root)?;
-        plot(&mut eq, &graph_settings, &graph)?;
-    }
+    plot(&mut eq, &graph_settings, &graph)?;
 
-    root.present()?;*/
+    root.present()?;
 
     println!("{}", Path::new(path).canonicalize()?.as_os_str().to_str().unwrap());
 
