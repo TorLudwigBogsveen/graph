@@ -47,11 +47,9 @@ fn plot(eq: &mut Equation, settings: &GraphSettings, chart: &Chart) -> Result<()
         for i in -(fidelity_w as i32)..=fidelity_w as i32 {
             let x = ((i as f64) / fidelity_w as f64) * (settings.sim_window.1-settings.sim_window.0) / 2.0;
 
-            let val = eq.call_on(&[("x", x), ("y", y)]);
-            let offset = 0.003;
-            if val < offset && val > -offset{
-                let alpha = 1.0 - val.abs() / (offset * 8.0);
-                chart.plotting_area().draw_pixel((x, y), &RGBAColor(0, 0, 0, alpha))?;
+            if eq.call_on(&[("x", x), ("y", y)]).as_bool().unwrap() {
+                //let alpha = 1.0 - val.abs() / (offset * 8.0);
+                chart.plotting_area().draw_pixel((x, y), &RGBAColor(0, 0, 0, 1.0))?;
             }
         }
     }
@@ -66,7 +64,7 @@ fn plot_x(eq: &mut Equation, settings: &GraphSettings, chart: &mut Chart) -> Res
         (-(fidelity as i32)..=fidelity as i32)
             .map(|i| ((i as f64) / fidelity as f64) * (settings.sim_window.1-settings.sim_window.0) / 2.0)
             .map(|x| {
-                (x, eq.call_on(&[("x", x)]))
+                (x, eq.call_on(&[("x", x)]).as_f64().unwrap())
             }),
         BLACK.stroke_width(3),
     ))?;
@@ -81,7 +79,7 @@ fn plot_y(eq: &mut Equation, settings: &GraphSettings, chart: &mut Chart) -> Res
         (-(fidelity as i32)..=fidelity as i32)
             .map(|i| ((i as f64) / fidelity as f64) * (settings.sim_window.3-settings.sim_window.2) / 2.0)
             .map(|y| {
-                (eq.call_on(&[("y", y)]), y)
+                (eq.call_on(&[("y", y)]).as_f64().unwrap(), y)
             }),
         BLACK.stroke_width(3),
     ))?;
