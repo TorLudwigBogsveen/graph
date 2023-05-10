@@ -7,32 +7,6 @@ use plotters_bitmap::BitMapBackend;
 use std::error::Error;
 use std::path::Path;
 
-pub fn mandelbrot(x: f64, y: f64) -> i32 {
-    let xoff: f64 = -2.5;
-    let yoff: f64 = -1.0;
-    let width: f64 = 3.5;
-    let height: f64 = 2.0;
-    
-    let pos = Complex {real: x, img: y};
-
-    let x0 = (pos.real / 1000 as f64) * width + xoff;
-    let y0 = (1.0 - (pos.img / 1000 as f64)) * height + yoff;
-    let mut iteration = 0;
-    let max_iteration = 100;
-
-    let mut z = Complex { real: 0.0, img: 0.0 };
-    let c = Complex {real: x0, img: y0};
-
-    while z.magsq() <= 2.0*2.0 && iteration < max_iteration {
-        z *= z;
-        z += c;
-
-        iteration = iteration + 1;
-    }
-
-    iteration
-}
-
 type Chart<'a, 'b> = ChartContext<'a, BitMapBackend<'b>, Cartesian2d<RangedCoordf64, RangedCoordf64>>;
 type Root<'a> = DrawingArea<BitMapBackend<'a>, plotters::coord::Shift>;
 struct GraphSettings<'a> {
