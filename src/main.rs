@@ -1,46 +1,13 @@
 use clap::{Arg, App};
 use mathsolver::equation::Equation;
+//use plotters::coord::types::RangedCoordf64;
 use plotters::prelude::*;
 use plotters_bitmap::BitMapBackend;
 use std::error::Error;
-use std::borrow::{Borrow, BorrowMut};
 use std::path::Path;
 
-struct BufferWrapper(Vec<u32>);
-impl Borrow<[u8]> for BufferWrapper {
-    fn borrow(&self) -> &[u8] {
-        // Safe for alignment: align_of(u8) <= align_of(u32)
-        // Safe for cast: u32 can be thought of as being transparent over [u8; 4]
-        unsafe {
-            std::slice::from_raw_parts(
-                self.0.as_ptr() as *const u8,
-                self.0.len() * 4
-            )
-        }
-    }
-}
-impl BorrowMut<[u8]> for BufferWrapper {
-    fn borrow_mut(&mut self) -> &mut [u8] {
-        // Safe for alignment: align_of(u8) <= align_of(u32)
-        // Safe for cast: u32 can be thought of as being transparent over [u8; 4]
-        unsafe {
-            std::slice::from_raw_parts_mut(
-                self.0.as_mut_ptr() as *mut u8,
-                self.0.len() * 4
-            )
-        }
-    }
-}
-impl Borrow<[u32]> for BufferWrapper {
-    fn borrow(&self) -> &[u32] {
-        self.0.as_slice()
-    }
-}
-impl BorrowMut<[u32]> for BufferWrapper {
-    fn borrow_mut(&mut self) -> &mut [u32] {
-        self.0.as_mut_slice()
-    }
-}
+//type Chart<'a> = ChartContext<'a, BitMapBackend<'a>, Cartesian2d<RangedCoordf64, RangedCoordf64>>;
+//type Root<'a> = DrawingArea<BitMapBackend<'a>, plotters::coord::Shift>;
 struct GraphSettings<'a> {
     path: &'a str,
     image_width: u32,
@@ -48,8 +15,29 @@ struct GraphSettings<'a> {
     sim_window: (f64, f64, f64, f64)
 }
 
+/*fn create_root<'a>(settings: &GraphSettings<'a>) -> Result<Root<'a>, Box<dyn Error>> {
+    let root = BitMapBackend::new(settings.path, (settings.image_width, settings.image_height)).into_drawing_area();
+    root.fill(&WHITE)?;
+    Ok(root)
+}
 
-fn plot(eq: &mut Equation, settings: GraphSettings) -> Result<(), Box<dyn Error>> {
+fn create_graph<'a>(settings: &GraphSettings<'a>, root: &'a Root<'a>) -> Result<Chart<'a>, Box<dyn Error>> {
+    let mut chart = ChartBuilder::on(root)
+        .margin(10)
+        .set_all_label_area_size(30)
+        .build_cartesian_2d(settings.sim_window.0..settings.sim_window.1, settings.sim_window.2..settings.sim_window.3)?;
+
+    chart
+        .configure_mesh()
+        .label_style(("sans-serif", 15).into_font().color(&BLACK))
+        .axis_style(&BLACK)
+        .draw()?;
+
+    Ok(chart)
+}*/
+
+
+fn plot(eq: &mut Equation, settings: &GraphSettings, /*chart: &Chart*/) -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::new(settings.path, (settings.image_width, settings.image_height)).into_drawing_area();
     root.fill(&WHITE)?;
 
@@ -63,15 +51,32 @@ fn plot(eq: &mut Equation, settings: GraphSettings) -> Result<(), Box<dyn Error>
         .label_style(("sans-serif", 15).into_font().color(&BLACK))
         .axis_style(&BLACK)
         .draw()?;
+    
+    let fidelity_w = settings.image_width;
+    let fidelity_h = settings.image_height;
+
+    for j in -(fidelity_h as i32)..=fidelity_h as i32 {
+        let y = ((j as f64) / fidelity_h as f64) * (settings.sim_window.3-settings.sim_window.2) / 2.0;
+        for i in -(fidelity_w as i32)..=fidelity_w as i32 {
+            let x = ((i as f64) / fidelity_w as f64) * (settings.sim_window.1-settings.sim_window.0) / 2.0;
+
+            let val = eq.call_on(&[("x", x), ("y", y)]);
+            if val < 0.003 && val > -0.003{
+                chart.plotting_area().draw_pixel((x, y), &BLACK)?;
+            }
+        }
+    }
+
+    /*let mut data = Vec::new();
 
     chart.draw_series(LineSeries::new(
-        (-(settings.image_width as i32)..=settings.image_width as i32)
-            .map(|i| ((i as f64) / settings.image_width as f64) * (settings.sim_window.1-settings.sim_window.0) + settings.sim_window.0)
+        (-(fidelity as i32)..=fidelity as i32)
+            .map(|i| ((i as f64) / fidelity as f64) * (settings.sim_window.1-settings.sim_window.0) + settings.sim_window.0)
             .map(|x| {
                 (x, eq.call_on(&[("x", x)]))
             }),
-        BLACK.stroke_width(1),
-    ))?;
+        BLACK.stroke_width(3),
+    ))?;*/
 
     root.present()?;
 
@@ -158,7 +163,16 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut eq = Equation::new(eq);
 
-    plot(&mut eq, graph_settings)?;
+    plot(&mut eq, &graph_settings)?;
+
+    /*let root = create_root(&graph_settings)?;
+
+    {
+        let graph = create_graph(&graph_settings, &root)?;
+        plot(&mut eq, &graph_settings, &graph)?;
+    }
+
+    root.present()?;*/
 
     println!("{}", Path::new(path).canonicalize()?.as_os_str().to_str().unwrap());
 
