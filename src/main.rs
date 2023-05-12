@@ -49,7 +49,7 @@ fn plot(eq: &mut Equation, settings: &GraphSettings, chart: &Chart) -> Result<()
 
             if eq.call_on(&[("x", x), ("y", y)]).as_bool().unwrap() {
                 //let alpha = 1.0 - val.abs() / (offset * 8.0);
-                chart.plotting_area().draw_pixel((x, y), &RGBAColor(0, 0, 0, 1.0))?;
+                chart.plotting_area().draw_pixel((x, y), &RGBAColor(0, 0, 0, 0.4))?;
             }
         }
     }
@@ -138,7 +138,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             .short('e')
             .value_name("EQUATION")
             .takes_value(true)
-            .default_value("x^pi")
+            .default_value("x^pi=y")
             .help("The equation to graph"))
         .arg(Arg::with_name("path")
             .long("path")
@@ -173,6 +173,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut graph = create_graph(&graph_settings, &root)?;
 
     plot(&mut eq, &graph_settings, &graph)?;
+    //plot_x(&mut eq, &graph_settings, &mut graph);
 
     root.present()?;
 
