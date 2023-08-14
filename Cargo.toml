@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 mathsolver = {git = "https://github.com/romptroll/math/", branch = "lib"}
-#math = {path = "../math"}
+#mathsolver = {path = "../math"}
 image = "*"
 
 clap = { version = "3.0" }
