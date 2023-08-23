@@ -659,7 +659,6 @@ checksum = "b5e6163cb8c49088c2c36f57875e58ccd8c87c7427f7fbd50ea6710b2f3f2e8f"
 [[package]]
 name = "mathsolver"
 version = "0.1.1"
-source = "git+https://github.com/romptroll/math/?branch=lib#be7fcfb5563f47bf58cf543cc8ec2d510f5402e6"
 dependencies = [
  "pest",
  "pest_derive",
