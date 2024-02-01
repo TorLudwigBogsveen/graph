@@ -101,6 +101,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             .takes_value(true)
             .default_value("-1.0")
             .help("Sets the minimum X value of the simulation window"))
+            .allow_hyphen_values(true)
         .arg(Arg::with_name("xmax")
             .long("xmax")
             .short('X')
@@ -108,6 +109,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             .takes_value(true)
             .default_value("1.0")
             .help("Sets the maximum X value of the simulation window"))
+            .allow_hyphen_values(true)
         .arg(Arg::with_name("ymin")
             .long("ymin")
             .short('y')
@@ -115,6 +117,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             .takes_value(true)
             .default_value("-1.0")
             .help("Sets the minimum Y value of the simulation window"))
+            .allow_hyphen_values(true)
         .arg(Arg::with_name("ymax")
             .long("ymax")
             .short('Y')
@@ -122,6 +125,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             .takes_value(true)
             .default_value("1.0")
             .help("Sets the maximum Y value of the simulation window"))
+            .allow_hyphen_values(true)
         .arg(Arg::with_name("equation")
             .long("equation")
             .short('e')
@@ -161,8 +165,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     let root = create_root(&graph_settings)?;
     let mut graph = create_graph_3d(&graph_settings, &root)?;
 
-    plot_3d(&mut eq, &graph_settings, &mut graph)?;
+    //plot_3d(&mut eq, &graph_settings, &mut graph)?;
     //plot_x(&mut eq, &graph_settings, &mut graph);
+
+    //plot_3d(&mut Equation::new("x^2+z^2=0.15"), &graph_settings, &mut graph)?;
+    plot_3d(&mut Equation::new("x^2+z^2=0.15"), &graph_settings, &mut graph)?;
+    plot_3d(&mut Equation::new("(x+0.5)^2+(y+0.7)^2+z^2=0.15"), &graph_settings, &mut graph)?;
+    plot_3d(&mut Equation::new("(x-0.5)^2+(y+0.7)^2+z^2=0.15"), &graph_settings, &mut graph)?;
+    plot_3d(&mut Equation::new("x^2+(y-0.9)^2+z^2=0.15"), &graph_settings, &mut graph)?;
+    //plot_3d(&mut Equation::new("(0.15/0.15)*sqrt(x^2+z^2)=y"), &graph_settings, &mut graph)?;
 
     root.present()?;
 
