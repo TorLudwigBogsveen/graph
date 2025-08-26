@@ -1,0 +1,4 @@
+5 => INum(5)
+a => IVar("a")
+b() => ICall("b", [])
+a(5) => ICall("a", [5])

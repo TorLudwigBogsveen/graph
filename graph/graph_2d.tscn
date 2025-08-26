@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://j1gs4p6vq86l"]
+
+[node name="Graph2D" type="Node2D"]
+
+[node name="LineGrapher" type="LineGrapher" parent="."]
+inner_position = Vector2(-4, -4)
+inner_size = Vector2(8, 8)
+expr = "sub(mul(x,x),add(2,x))"
+width = 2.0
