@@ -1,6 +1,6 @@
 use std::{collections::{hash_map::Entry, HashMap}, fmt::Debug, iter::Peekable, marker::PhantomData, str::Chars};
 
-use crate::calc::{Evaluator, Func, Functions, Instruction};
+use crate::calc::{Evaluator, Function, Functions, Instruction};
 
 struct VariableMap<'a> {
     map: HashMap<&'a str, usize>,
@@ -28,7 +28,7 @@ impl<'a> VariableMap<'a> {
 
 struct FunctionMap<'a, T> {
     var: VariableMap<'a>,
-    funcs: Vec<Func<T>>
+    funcs: Vec<Box<dyn Function<T>>>
 }
 
 impl<'a, T: Functions> FunctionMap<'a, T> {
@@ -64,8 +64,9 @@ impl<'a, T: NumberParser + Copy + Debug + Functions> Parser<'a, T> {
         let mut t = Tokenizer::new(self.expr);
 
         let i = self.parse_expr(&mut t)?;
+        let map = self.variable_mapping.map.iter().map(|(k, v)| (k.to_string(), *v)).collect::<HashMap<_,_>>();
         
-        Some(Evaluator::new(i, self.function_mapping.funcs))
+        Some(Evaluator::new(i, self.function_mapping.funcs, map))
     }
 
     fn parse_call(&mut self, t: &mut Tokenizer<'a>, var: &'a str) -> Option<Instruction<T>> {

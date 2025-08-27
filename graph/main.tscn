@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://bka7dgl30ah88"]
+[gd_scene load_steps=3 format=3 uid="uid://bka7dgl30ah88"]
 
 [ext_resource type="Script" uid="uid://cawfv0irg3too" path="res://main.gd" id="1_0xm2m"]
 [ext_resource type="PackedScene" uid="uid://j1gs4p6vq86l" path="res://graph_2d.tscn" id="1_ig7tw"]
-[ext_resource type="Script" uid="uid://dfwb8wftiye2a" path="res://graph_2d.gd" id="3_h2yge"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_0xm2m")
@@ -14,7 +13,6 @@ text = "mul(x,x)"
 wrap_mode = 1
 
 [node name="Graph2D" parent="." instance=ExtResource("1_ig7tw")]
-position = Vector2(500, 300)
-script = ExtResource("3_h2yge")
+position = Vector2(579, 316)
 
 [connection signal="text_changed" from="TextEdit" to="." method="_on_text_edit_text_changed"]

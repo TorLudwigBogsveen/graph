@@ -1,9 +1,36 @@
-[gd_scene format=3 uid="uid://j1gs4p6vq86l"]
+[gd_scene load_steps=3 format=3 uid="uid://j1gs4p6vq86l"]
+
+[ext_resource type="Script" uid="uid://dfwb8wftiye2a" path="res://graph_2d.gd" id="1_d5b4o"]
+[ext_resource type="Script" uid="uid://bokkpxs81ddu7" path="res://implicit_line_grapher.gd" id="2_wjwph"]
 
 [node name="Graph2D" type="Node2D"]
+scale = Vector2(1, -1)
+script = ExtResource("1_d5b4o")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+clip_contents = true
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -200.0
+offset_right = 200.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.145098, 0.372549, 0, 1)
 
 [node name="LineGrapher" type="LineGrapher" parent="."]
 inner_position = Vector2(-4, -4)
 inner_size = Vector2(8, 8)
+size = Vector2(400, 400)
 expr = "sub(mul(x,x),add(2,x))"
 width = 2.0
+
+[node name="ImplicitLineGrapher" type="ImplicitLineGrapher" parent="."]
+inner_position = Vector2(-4, -4)
+inner_size = Vector2(8, 8)
+size = Vector2(400, 400)
+script = ExtResource("2_wjwph")
