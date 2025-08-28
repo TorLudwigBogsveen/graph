@@ -1,0 +1,45 @@
+[gd_scene load_steps=7 format=3 uid="uid://ddtewmbbj8apb"]
+
+[ext_resource type="Script" uid="uid://t8ipy2igwt1x" path="res://implicit_surface_grapher.gd" id="1_2orul"]
+[ext_resource type="Material" uid="uid://buu8m7vknghmu" path="res://3dmaterial.tres" id="1_f4t7q"]
+[ext_resource type="Script" uid="uid://77eb6id3x1v1" path="res://adddons/simple-free-look-camera-4-cf0bc21bfd15940b18ec42e3c6cae1ad385284c4/camera.gd" id="2_817v6"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_2orul"]
+
+[sub_resource type="Environment" id="Environment_2orul"]
+ambient_light_source = 2
+ambient_light_color = Color(0.82794, 0.450481, 0.43159, 1)
+ambient_light_energy = 0.15
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_817v6"]
+
+[node name="Graph3d" type="Node3D"]
+
+[node name="ImplicitSurfaceGrapher" type="ImplicitSurfaceGrapher" parent="."]
+inner_position = Vector3(-2.2, -2.2, -2.2)
+inner_size = Vector3(4.4, 4.4, 4.4)
+size = Vector3(1, 1, 1)
+lhs_expr = "add(mul(x,x),mul(z,z))"
+rhs_expr = "4"
+material_override = ExtResource("1_f4t7q")
+script = ExtResource("1_2orul")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.99998, -0.0063355, 0, 0.0063355, 0.99998, 0, 0, 0)
+visible = false
+mesh = SubResource("BoxMesh_2orul")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.998403, 0, 0.0565012, 0, 1, 0, -0.0565012, 0, 0.998403, 0, 0, 1.00253)
+near = 0.001
+script = ExtResource("2_817v6")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_2orul")
+camera_attributes = SubResource("CameraAttributesPractical_817v6")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.719061, 0.694947, 0, -0.694947, 0.719061, 0, 4.2463, 4.58196)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(0.0073129, 0, 0.999973, 0, 1, 0, -0.999973, 0, 0.0073129, 3.47908, 0, -6.01036)

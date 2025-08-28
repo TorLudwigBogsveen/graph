@@ -37,9 +37,10 @@ impl<'a, T: Functions> FunctionMap<'a, T> {
     }
 
     fn get(&mut self, var: &'a str) -> Option<usize> {
+        let has = self.var.map.contains_key(var);
         let i = self.var.get(var);
 
-        if i == self.var.n-1 {
+        if !has {
             let f = T::get(var)?;
             self.funcs.push(f);
         }

@@ -1,16 +1,26 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
     "configurations": [
         {
-            "type": "lldb",
+            "name": "Debug Project (Godot 4)",
+            "type": "lldb", // type provided by CodeLLDB extension
             "request": "launch",
-            "name": "Debug",
-            "program": "${workspaceFolder}/<executable file>",
-            "args": [],
-            "cwd": "${workspaceFolder}"
+            "preLaunchTask": "rust: cargo build",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "-e", // run editor (remove this to launch the scene directly)
+                "-w", // windowed mode
+            ],
+            "linux": {
+                "program": "/usr/local/bin/godot4",
+            },
+            "windows": {
+                "program": "C:\\Program Files\\Godot\\Godot_v4.1.X.exe",
+            },
+            "osx": {
+                // NOTE: on macOS the Godot.app needs to be manually re-signed 
+                // to enable debugging (see below)
+                "program": "/Applications/Godot.app/Contents/MacOS/Godot",
+            }
         }
     ]
 }
