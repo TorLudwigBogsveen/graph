@@ -16,11 +16,7 @@ ambient_light_energy = 0.15
 [node name="Graph3d" type="Node3D"]
 
 [node name="ImplicitSurfaceGrapher" type="ImplicitSurfaceGrapher" parent="."]
-inner_position = Vector3(-2.2, -2.2, -2.2)
-inner_size = Vector3(4.4, 4.4, 4.4)
-size = Vector3(1, 1, 1)
-lhs_expr = "add(mul(x,x),mul(z,z))"
-rhs_expr = "4"
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 material_override = ExtResource("1_f4t7q")
 script = ExtResource("1_2orul")
 

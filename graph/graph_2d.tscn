@@ -23,13 +23,32 @@ grow_vertical = 2
 color = Color(0.145098, 0.372549, 0, 1)
 
 [node name="LineGrapher" type="LineGrapher" parent="."]
+_import_path = NodePath("")
+unique_name_in_owner = false
+process_mode = 0
+process_priority = 0
+process_physics_priority = 0
+process_thread_group = 0
+physics_interpolation_mode = 0
+auto_translate_mode = 0
+editor_description = ""
 inner_position = Vector2(-4, -4)
 inner_size = Vector2(8, 8)
 size = Vector2(400, 400)
 expr = "sub(mul(x,x),add(2,x))"
 width = 2.0
+script = null
 
 [node name="ImplicitLineGrapher" type="ImplicitLineGrapher" parent="."]
+_import_path = NodePath("")
+unique_name_in_owner = false
+process_mode = 0
+process_priority = 0
+process_physics_priority = 0
+process_thread_group = 0
+physics_interpolation_mode = 0
+auto_translate_mode = 0
+editor_description = ""
 inner_position = Vector2(-4, -4)
 inner_size = Vector2(8, 8)
 size = Vector2(400, 400)

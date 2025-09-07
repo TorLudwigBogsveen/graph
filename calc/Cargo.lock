@@ -16,6 +16,7 @@ name = "calc"
 version = "0.1.0"
 dependencies = [
  "godot",
+ "math",
 ]
 
 [[package]]
@@ -117,6 +118,11 @@ name = "libc"
 version = "0.2.175"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6a82ae493e598baaea5209805c49bbf2ea7de956d50d7da0da1164f9c6d28543"
+
+[[package]]
+name = "math"
+version = "0.1.2"
+source = "git+https://github.com/romptroll/math/?branch=master#4b98d9af07853ba22db61870fd11467fdecd154c"
 
 [[package]]
 name = "memchr"

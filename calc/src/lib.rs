@@ -2,11 +2,11 @@ use std::str::FromStr;
 
 use godot::{classes::{ILine2D, IMeshInstance3D, Line2D, MeshInstance3D, SurfaceTool, mesh::PrimitiveType}, prelude::*};
 
-mod calc;
-mod parser;
 mod squares;
 mod cubes;
-use crate::{calc::*, cubes::marching_cubes, parser::Parser, squares::marching_squares};
+use math::{calc::*, parser::Parser};
+
+use crate::squares::marching_squares;
 
 struct MyExtension;
 
@@ -251,12 +251,10 @@ impl ImplicitSurfaceGrapher {
                 }
             }
         }
-        let triangles = marching_cubes(resolution as usize, resolution as usize, resolution as usize, grid);
+        let triangles = cubes::marching_cubes(resolution as usize, resolution as usize, resolution as usize, grid);
 
         let mut surface_tool = SurfaceTool::new_gd();
         surface_tool.begin(PrimitiveType::TRIANGLES);
-        surface_tool.
-
         surface_tool.set_color(Color::RED);
         
         for [(z1, y1, x1), (z2, y2, x2), (z3, y3, x3)] in triangles {
@@ -299,61 +297,5 @@ impl IMeshInstance3D for ImplicitSurfaceGrapher {
         };
         
         grapher
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use crate::parser::*;
-
-    #[test]
-    fn t() {
-        println!("{:#?}", Parser::<f32>::new("6").parse());
-        println!("{:#?}", Parser::<f32>::new("a").parse());
-        println!("{:#?}", Parser::<f32>::new("add(6)").parse());
-        println!("{:#?}", Parser::<f32>::new("add(6,4)").parse());
-        println!("{:#?}", Parser::<f32>::new("add(6,sub(1,4))").parse());
-        println!("{:#?}", Parser::<f32>::new("add(mul(4,2),5)").parse());
-        println!("{:#?}", Parser::<f32>::new("add(add(1,2),add(3,4))").parse());
-    }
-
-    #[test]
-    fn t2() {
-        let eval = |expr, args| Parser::<f32>::new(expr).parse().unwrap().eval(args).unwrap();
-        assert_eq!(eval("6", &[]), 6.);
-        assert_eq!(eval("add(6,4)", &[]), 10.);
-        assert_eq!(eval("add(6,sub(1,4))", &[]), 3.);
-        assert_eq!(eval("add(mul(4,2),5)", &[]), 13.);
-        assert_eq!(eval("add(add(1,2),add(3,4))", &[]), 10.);
-    }
-
-    #[test]
-    fn t3() {
-        let eval = |expr, args| Parser::<f64>::new(expr).parse().unwrap().eval(args).unwrap();
-        println!("{}", eval("deriv(mul(x,x),x)", &[("x", 5.)]));
-    }
-
-    #[test]
-    fn t4() {
-        let eval = |expr, args| Parser::<f64>::new(expr).parse().unwrap().eval(args).unwrap();
-        println!("{}", eval("int(sin(x),x,0,1,1000)", &[("x", 5.)]));
-    }
-
-    #[test]
-    fn t5() {
-        let eval = |expr, args| Parser::<f64>::new(expr).parse().unwrap().eval(args).unwrap();
-        println!("{}", eval("mul(x,x)", &[("x", 0.75), ("y", 0.5)]));
-        println!("{}", eval("y", &[("x", 0.75), ("y", 0.5)]));
-        println!("{}", eval("mul(x,x)", &[("y", 0.5), ("x", 0.75)]));
-        println!("{}", eval("y", &[("y", 0.5), ("x", 0.75)]));
-    }
-
-    #[test]
-    fn t6() {
-        let eval = |expr, args| Parser::<f64>::new(expr).parse().unwrap().eval(args).unwrap();
-        println!("{:#?}", Parser::<f64>::new("add(mul(10,10),mul(10,10))").parse().unwrap());
-        assert_eq!(eval("mul(x,x)", &[("x", 10.), ("y", 10.), ("z", 10.)]), 100.);
-        assert_eq!(eval("add(mul(10,10),mul(10,10))", &[("x", 10.), ("y", 10.), ("z", 10.)]), 200.);
-        assert_eq!(eval("add(add(mul(x,x),mul(y,y)),mul(z,z))", &[("x", 10.), ("y", 10.), ("z", 10.)]), 300.);
     }
 }
